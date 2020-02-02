@@ -7,3 +7,7 @@ class newsTest(unittest.TestCase):
     '''
     Test class to test the behaviour of the news class
     '''
+
+
+    def setUp(self):
+        
