@@ -8,7 +8,7 @@ News = news.news
 # Getting api key
 api_key = app.config['NEWS_API_KEY']
 
-# Getting the movie base url
+# Getting the news base url
 base_url = app.config["NEWS_API_BASE_URL"]
 
 
@@ -71,4 +71,26 @@ def get_news(id):
 
 
 
-    def process_results(news_list:)
+    def process_results(news_list):
+    '''
+    Function  that processes the news result and transform them to a list of Objects
+    Args:
+        news_list: A list of dictionaries that contain movie details
+    Returns :
+        news_results: A list of news objects
+    '''
+    movie_results = []
+    for news_item in movie_list:
+        id = news_item.get('id')
+        title = news_item.get('original_title')
+        overview = movie_item.get('overview')
+        poster = news_item.get('poster_path')
+        vote_average = news_item.get('vote_average')
+        vote_count = news_item.get('vote_count')
+
+        if poster:
+
+            news_object = Movie(id,title,overview,poster,vote_average,vote_count)
+            news_results.append(news_object)
+
+    return news_results
