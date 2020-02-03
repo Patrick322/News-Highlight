@@ -29,10 +29,10 @@ def index():
 
 
 @app.route('/movie/<int:movie_id>')
-def newws(news_id):
+def news(news_id):
 
     '''
-    View news page function that returns the movie details page and its data
+    View news page function that returns the news details page and its data
     '''
     movie = get_news(news_id)
     title = f'{news.title}'
@@ -47,8 +47,8 @@ def search(news_name):
     '''
     View function to display the search results
     '''
-    movie_name_list = movie_name.split(" ")
-    movie_name_format = "+".join(movie_name_list)
+    news_name_list = movie_name.split(" ")
+    news_name_format = "+".join(movie_name_list)
     searched_movies = search_movie(movie_name_format)
     title = f'search results for {movie_name}'
     return render_template('search.html',movies = searched_movies)
