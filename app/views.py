@@ -47,28 +47,28 @@ def search(news_name):
     '''
     View function to display the search results
     '''
-    news_name_list = movie_name.split(" ")
+    news_name_list = news_name.split(" ")
     news_name_format = "+".join(movie_name_list)
-    searched_movies = search_movie(movie_name_format)
-    title = f'search results for {movie_name}'
-    return render_template('search.html',movies = searched_movies)
+    searched_news = search_news(m_name_format)
+    title = f'search results for {news_name}'
+    return render_template('search.html',movies = searched_news)
 
 
-@app.route('/movie/review/new/<int:id>', methods = ['GET','POST'])
-def new_review(movie_id):
+@app.route('/news/review/new/<int:id>', methods = ['GET','POST'])
+def new_review(news_id):
 
     form = ReviewForm()
 
-    movie = get_movie(movie_id)
+    movie = get_news(news_id)
 
     if form.validate_on_submit():
         title = form.title.data
         review = form.review.data
 
-        new_review = Review(movie.id,title,movie.poster,review)
+        new_review = Review(movie.id,title,news.poster,review)
         new_review.save_review()
 
-        return redirect(url_for('movie',movie__id = movie.id ))
+        return redirect(url_for('news',news__id = movie.id ))
 
     title = f'{movie.title} review'
     return render_template('new_review.html',title = title, review_form=form, movie=movie)
