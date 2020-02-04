@@ -2,7 +2,7 @@
 
 <div class="row ">
     {% for source in news_sources %}
-    <li class="list-unstyled m-2">
+    <li class="list-unstyled m-4">
         <a class="btn btn-primary" href="{{ url_for('news_articles', source=source.id) }}" role="button">{{ source.name }}</a>
     </li>
     {% endfor %}
