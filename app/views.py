@@ -1,74 +1,22 @@
-from flask import render_template,request,redirect,url_for
+from flask import render_template,redirect,url_for
 from app import app
-from .requests import get_movies,get_movie,search_movie
-from .forms import ReviewForm
-from .trendss import review
-
-Review = review.Review
+from .requests import get_sources, get_articles
 
 # Views
 @app.route('/')
-def index():
+@app.route('/sources')
+def news_sources():
     '''
     View root page function that returns the index page and its data
     '''
-
-    # Getting popular movie
-    popular_movies = get_movies('popular')
-    upcoming_movie = get_movies('upcoming')
-    now_showing_movie = get_movies('now_playing')
-
-    title = 'Home - Welcome to The best Movie Review Website Online'
-
-    search_movie = request.args.get('movie_query')
-
-    if search_movie:
-        return redirect(url_for('search',movie_name=search_movie))
-    else:
-        return render_template('index.html', title = title, popular = popular_movies, upcoming = upcoming_movie, now_showing = now_showing_movie )
+    news_sources = get_sources()
+    return render_template('sources.html', news_sources=news_sources)
 
 
-@app.route('/movie/<int:movie_id>')
-def news(news_id):
-
+@app.route('/articles/<source>')
+def news_articles(source):
     '''
     View news page function that returns the news details page and its data
     '''
-    movie = get_news(news_id)
-    title = f'{news.title}'
-    reviews = Review.get_reviews(movie.movie_id)
-
-    return render_template('news.html',title = title,news = news,reviews = reviews)
-
-
-
-@app.route('/search/<movie_name>')
-def search(news_name):
-    '''
-    View function to display the search results
-    '''
-    news_name_list = news_name.split(" ")
-    news_name_format = "+".join(movie_name_list)
-    searched_news = search_news(m_name_format)
-    title = f'search results for {news_name}'
-    return render_template('search.html',movies = searched_news)
-
-
-@app.route('/news/review/new/<int:id>', methods = ['GET','POST'])
-def new_review(news_id):
-
-    form = ReviewForm()
-
-    movie = get_news(news_id)
-
-    if form.validate_on_submit():
-        title = form.title.data
-        review = form.review.data
-
-        new_review = Review(movie.id,title,news.poster,review)
-        new_review.save_review()
-
-        return redirect(url_for('news',news__id = movie.id ))
-
-    title = f'{movie.title} review'
-    return render_template('new_review.html',title = title, review_form=form, movie=movie)
+    news_articles = get_articles(source)
+    return render_template('articles.html', news_articles=news_articles)

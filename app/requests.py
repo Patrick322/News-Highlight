@@ -1,96 +1,68 @@
 from app import app
 import urllib.request,json
-form .trends import news
-
-News = news.news
-
+from .models import NewsSource,NewsArticle
 
 # Getting api key
-api_key = app.config['NEWS_API_KEY']
+api_key = app.config["NEWS_API_KEY"]
 
 # Getting the news base url
-base_url = app.config["NEWS_API_BASE_URL"]
+news_sources_url = app.config["SOURCES_API_URL"]
 
+#Getting articles URL
+news_articles_url = app.config["ARTICLES_API_URL"]
 
-def get_news(category):
+def process_sources(sources_list):
+    all_sources = []
+
+    for source in sources_list:
+        new_source = NewsSource(source['id'], source['name'])
+        all_sources.append(new_source)
+
+    return all_sources
+
+def process_articles(articles_list):
+    all_articles = []
+
+    for article in articles_list:
+        new_article = NewsArticle(
+            article['title'],
+            article['description'],
+            article['urlToImage'],
+            article['publishedAt'],
+            article['content']
+        )
+        all_articles.append(new_article)
+
+    return all_articles
+
+def get_sources():
     '''
     Function that gets the json response to our url request
     '''
-    get_news_url = base_url.format(category,api_key)
+    sources_url = news_sources_url.format(api_key)
 
-    with urllib.request.urlopen(get_news_url) as url:
+    with urllib.request.urlopen(sources_url) as url:
         get_news_data = url.read()
-        get_movies_response = json.loads(get_news_data)
+        get_news_response = json.loads(get_news_data)
 
-        news_results = None
+        source_results = None
+        if get_news_response['sources']:
+            sources = get_news_response['sources']
+            source_results = process_sources(sources)
 
-            if get_news_response['results']:
-                news_results_list = get_news_response['results']
-                news_results = process_results(news_results_lists)
+    return source_results
 
+def get_articles(source):
+    """  """
+    articles_url = news_articles_url.format(source, api_key)
 
-    return news_results
+    with urllib.request.urlopen(articles_url) as url:
+        get_news_data = url.read()
+        get_news_response = json.loads(get_news_data)
 
+        article_results = None
+        if get_news_response['articles']:
+            articles = get_news_response['articles']
+            article_results = process_articles(articles)
 
-def get_news(id):
-    get_news_details_url = base_url.format(id,api_key)
-
-    with urllib.request.urlopen(get_news_details_url) as url:
-        news_details_data = url.read()
-        news_details_response = json.loads(movie_details_data)
-
-        news_object = None
-        if news_details_response:
-            id = news_details_response.get('id')
-            title = news_details_response.get('original_title')
-            overview = news_details_response.get('overview')
-            poster = news_details_response.get('poster_path')
-            vote_average = news_details_response.get('vote_average')
-            vote_count = news_details_response.get('vote_count')
-
-            movie_object = news(id,title,overview,poster,vote_average,vote_count)
-
-    return news_object
-
-
-
-    def search_news(news_name):
-    search_news_url = 'https://api.themoviedb.org/3/search/news?api_key={}&query={}'.format(api_key,news_name)
-    with urllib.request.urlopen(search_news_url) as url:
-        search_news_data = url.read()
-        search_news_response = json.loads(search_news_data)
-
-        search_news_results = None
-
-        if search_news_response['results']:
-            search_news_list = search_movie_response['results']
-            search_news_results = process_results(search_news_list)
-
-
-    return search_news_results
-
-
-
-    def process_results(news_list):
-    '''
-    Function  that processes the news result and transform them to a list of Objects
-    Args:
-        news_list: A list of dictionaries that contain movie details
-    Returns :
-        news_results: A list of news objects
-    '''
-    movie_results = []
-    for news_item in movie_list:
-        id = news_item.get('id')
-        title = news_item.get('original_title')
-        overview = movie_item.get('overview')
-        poster = news_item.get('poster_path')
-        vote_average = news_item.get('vote_average')
-        vote_count = news_item.get('vote_count')
-
-        if poster:
-
-            news_object = Movie(id,title,overview,poster,vote_average,vote_count)
-            news_results.append(news_object)
-
-    return news_results
+    return article_results
